@@ -36,4 +36,7 @@ dependencies {
 	
 	// pour mocker les api web utilis�es
 	testCompile group: 'com.github.tomakehurst', name: 'wiremock-jre8', version: '2.23.2'
+	
+	// https://mvnrepository.com/artifact/net.minidev/json-smart
+	compile group: 'net.minidev', name: 'json-smart', version: '2.3'
 }
