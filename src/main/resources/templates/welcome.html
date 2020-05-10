@@ -1,0 +1,184 @@
+<!DOCTYPE HTML>
+<html xmlns="http://www.w3.org/1999/xhtml" 
+	xmlns:th="http://www.thymeleaf.org"
+	xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+	
+	<title>Test recrutement IT Eqinov</title>
+	
+	<link rel="stylesheet" th:href="@{/webjars/jquery-ui/jquery-ui.min.css}" />
+	<link rel="stylesheet" th:href="@{/webjars/bootstrap/css/bootstrap.min.css}" />
+	<link rel="stylesheet" th:href="@{/css/theme.css}">
+	
+	<script th:src="@{/webjars/jquery/jquery.min.js}"></script>
+	<script th:src="@{/webjars/jquery-ui/jquery-ui.min.js}"></script>
+	<script th:src="@{/webjars/popper.js/umd/popper.min.js}"></script>
+	<script th:src="@{/webjars/bootstrap/js/bootstrap.min.js}"></script>
+	<script th:src="@{/webjars/highstock/highstock.js}"></script>
+			
+	<script th:inline="javascript">
+		jQuery(document).ready(function ($) {
+			eqinov.init();
+	    });				
+	    
+		eqinov = function() {
+			var pub;
+			var chart;
+			
+		    function createChart(series){
+		    	return Highcharts.stockChart('conso', {
+		    		chart: {
+		    	        type: 'line'
+		    	    },
+		            exporting:{
+		            	enabled: false
+		            },
+		            title: {
+		                text: ''
+		            },
+		            tooltip: {
+	        			xDateFormat: '%A %e %b %Y, %H:%M',
+		            },
+		            xAxis: {
+		                type: 'datetime',
+		                dateTimeLabelFormats: {
+		                  day: "%e. %b",
+		                  month: "%b '%y",
+		                  year: "%Y"
+		                }
+		            },
+		    		legend: {
+		    			enabled: false
+		    		},
+		    		credits: {
+						enabled: false
+					},
+					plotOptions: {
+				        line: {
+				            dataGrouping: {
+				                enabled: false
+				            }
+				        }
+				    },
+		            "series": series,
+		            lang: {
+		                noData: "Il n'existe pas de données de consommation pour ce site"
+		            },
+		        });
+		    };
+		    
+			pub = {
+				init: function(){	
+					eqinov.loadGraph([[${currentYear}]]);
+				},
+				
+				loadGraph: function(year){
+					if(chart) {
+			        	chart.showLoading('Rechargement du graph...');
+					}
+					$.getJSON([[@{/data/conso}]] + '?year=' + year, function (data) {
+			            var series = [{
+			            	id: "real",
+		                    type: "line",
+			            	name: "Consommation réalisée",
+			            	data: data
+			            }];
+	
+			            chart = createChart(series);
+			        });					
+				},  	
+				changeYear: function(year){
+					$.ajax({
+		    			url : [[@{/view/refresh}]]+'?year='+year,
+		    		   	type : 'GET',
+		    		   	success : function(data, textStatus, jqXHR){
+		    		   		$('#result').html(data);
+		    		   	},
+	    	  		    complete: function(data) {
+	    	  		    	eqinov.loadGraph(year);
+	    	  		    }
+		    		});
+				},  	
+			};
+	
+			return pub;
+		}();
+		  
+	</script>
+</head>
+
+<body>
+
+	<nav class="navbar navbar-expand-md navbar-eqinov fixed-top">
+	    <a class="navbar-brand" href="https://www.eqinov.com/" target="_blank">eqinov</a>
+	    <div class="collapse navbar-collapse justify-content-end" id="navbarCollapse">
+			<span>Test de recrutement Java</span>
+		</div>
+	</nav>
+	
+	<main role="main" class="container">
+			
+		<!-- Nom du site et son adresse -->
+		<h2 th:text="${site.name}"></h2>
+		<span th:text="${site.address.fullAddress}"></span>		
+		
+		<br/>
+		<br/>
+		
+		<!-- Sélection de l'année à afficher -->
+		<form name="form1" class="form-inline justify-content-end">
+		  <label>Année : </label>&nbsp;
+		  <select th:id='select' class="form-control form-control-sm" style="width:100px" onchange="eqinov.changeYear(this.value)">
+				<option th:each="year : ${years}" th:value="${year}" th:text="${year}" th:selected="(${year}==${currentYear})">
+			</select>
+		</form>
+		
+		<!-- Affichage du résultat pour l'année et du fragment si besoin -->
+		<div id="result">
+			
+			<th:block th:fragment="result">
+				<div class="row">
+					<div class="col-md-6">
+						Consommation annuelle : <label th:text="${dataYear}"></label> MWh
+					</div>
+					<div class="col-md-4">
+						<a th:var  th:href="@{/data/history}" class="btn btn-primary btn-sm mb-3">Load data history</a>
+					</div>
+				</div>
+				<div th:if="${message}" class="row">
+					<div class="alert alert-info alert-dismissible fade show">
+    					<label th:text="${message}"></label>
+    					<button type="button" class="close" data-dismiss="alert">&times;</button>
+					</div>
+				</div>
+			
+		 		<div id="conso"></div>
+		 		
+		 		<h3>Evolution de la consommation électrique mensuelle</h3>
+				<div>
+					<table class="table table-bordered table-striped">
+						<thead class="thead-dark">
+							<tr>
+								<th>Mois</th>
+								<th>Consommation (MWh)</th>
+							</tr>
+						</thead>
+						<tbody>
+							<tr th:each="entry: ${dataTable}">
+								<td th:text="${entry.key}"/>
+								<td th:text="${entry.value}"/>
+							</tr>
+						</tbody>
+					</table>
+				</div>
+			</th:block>
+			
+			<br/><br/>
+		
+		</div>
+	 	
+	</main>
+</body>
+</html>

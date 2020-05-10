@@ -1,0 +1,29 @@
+@font-face {
+	font-family: 'Coolvetica-Regular';
+	font-style: normal;
+	font-weight: normal;
+	src: local('Coolvetica-Regular'), url('font/coolvetica/coolvetica.woff') format('woff');
+}
+
+body {
+  padding-top: 5rem;
+}
+
+.starter-template {
+  padding: 3rem 1.5rem;
+  text-align: center;
+}
+
+.navbar .navbar-brand {
+	font-size: 32px;
+}
+
+.navbar, .navbar-brand {
+	font-size:25px;
+	font-family:'Coolvetica-Regular';
+	color: white ;
+}
+
+.navbar-eqinov{
+	background : #34C5F1 ;
+}

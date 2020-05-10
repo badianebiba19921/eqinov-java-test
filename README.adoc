@@ -1,0 +1,88 @@
+# Test de recrutement pour les développeurs Java
+
+Bienvenue dans le projet de test de recrutement pour la société Eqinov. L'objectif est de tester vos compétences en développement Java sur un projet simplifié avec les différents frameworks que nous utilisons. 
+
+## Pré-requis et installation
+### Outils de build
+Pour réaliser les développements demandés vous aurez besoin :
+
+- de la version 8 du jdk
+- d'un outil de gestion de dépendances et de compilation, le projet est configuré pour utiliser maven ou gradle. A Eqinov, nous utilisons gradle. Voici les liens d'installation, des deux outils :
+ * maven : https://maven.apache.org/maven-release/download.cgi
+ * gradle : https://gradle.org/releases/
+ 
+### Vérification du build
+Après avoir récupérer le projet sur github, vous pourrez vérifier que le projet fonctionne en tapant les commandes suivantes :
+
+pour gradle
+[indent=0]
+----
+	$ ./gradlew bootRun
+----
+ 
+pour maven
+[indent=0]
+----
+	$ ./mvn spring-boot:run
+----
+
+Spring boot doit indiqué le démarrage du serveur dans la console. En tapant http://localhost:8080, vous accéderez à l'ihm web du projet.
+
+image::images/ihm.jpg[]
+### Outils pour le développement
+Pour modifier le code et débugguer le projet, vous aurez besoin :
+
+- d'un environnement de développement eclipse ou intelij. A Eqinov, nous utilisons eclipse dont voici le lien d'installation : https://www.eclipse.org/downloads/packages/release/2019-12/r/eclipse-ide-enterprise-java-developers
+- du serveur tomcat, nous utilisons la version 9 : https://tomcat.apache.org/download-90.cgi
+
+Vous aurez par la suite besoin : 
+
+- d'importer les sources du projet dans votre environnement de développement
+- d'ajouter le serveur tomcat et d'ajouter le war eqinov-java-test au serveur tomcat (dans eclipse clic droit Add/remove)
+
+Lorsque que vous êtes dans votre EDI, un fois le serveur lancé, vous accedez au projet dans votre navigateur en tapant http://localhost:8080/eqinov-java-test. Vous pouvez ainsi démarrer/debugguer, votre projet pour les développements qui vont seront demandés.
+
+## Modifications demandées
+
+NOTE: pour les exercices, nous souhaitons que les traitements soient réalisés en java (pas de traitement javascript à part les appels ajax si vous le souhaitez)
+
+### Contexte
+Eqinov a signé le contrat pour un nouveau client dans le cadre de son activité de flexilibité des consommations électriques. Ce client, Papeterie d'Issy Les Moulineaux, nous a donné son accord pour étudier l'historique de ses consommations. Vous trouverez donc sur l'ihm, l'historique de sa consommation pour l'année 2019.
+
+### Exercice 1
+Nous souhaiterions connaître l'évolution de sa consommation mensuelle pour l'année 2019. Pour cela, vous devrez ajouter un tableau sous le graphique de consommation :
+
+- avec une colonne pour chaque mois
+- avec le nom du mois en-tête du tableau
+- la valeur de la consommation mensuelle pour le mois concerné
+
+NOTE: les données présentes en base sont en MW et à pas 10 minutes
+
+NOTE: pour calculer la consommation mensuelle il faut d'abord prendre la consommation horaire en faisant la moyenne des puissances disponibles pour une heure puis sommer les consommations horaires sur le mois. 
+
+### Exercice 2
+Nous souhaiterions connaître la consommation annuelle pour l'année 2019. 
+
+Pour cela, ajouter un libellé dans l'ihm de la manière suivante : (Consommation annuelle : xxx MWh)
+
+### Exercice 3
+Nous avons la possibilité de récupérer l'historique de consommation de 2018 sur une api d'un de nos partenaires. Cet historique serait très utile à l'équipe opérationnelle afin d'étudier l'évolution de sa consommation. 
+
+Vous trouverez dans le dossier src/test/java une classe s'appelant MockApi.java.
+
+Pour lancer cette api, depuis Eclipse, clic droit -> Run as -> Java Application.
+
+Voici l'accès à l'api : http://localhost:2345/api/conso
+
+Pour cet exercice, vous devrez donc :
+
+- ajouter une action dans l'ihm qui permettra de récupérer la consommation via cette api
+- désérialiser l'api en objet java
+- persister l'historique des consommations récupérées dans la base de données
+
+Pour vérifier que votre développement fonctionne : 
+
+- l'année 2018 doit s'afficher dans la liste de sélection
+- la consommation 2018 et l'évolution de la consommation mensuelle doit s'afficher si on choisit l'année 2018 dans la liste de selection
+
+NOTE: l'api retourne des données json
